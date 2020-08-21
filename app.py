@@ -247,13 +247,11 @@ def get_total(product, location):
 
 
 def get_imported(product, location):
-
     imported = ProductMovement.query.filter_by(product_name=product).filter_by(
         to_location=location).all()
     return imported
 
 def get_exported(product, location):
-  
     exported = ProductMovement.query.filter_by(product_name=product).filter_by(
         from_location=location).all()
     return exported
