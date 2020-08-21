@@ -1,4 +1,4 @@
-
+# Inventory Management
 ### Description 
 This is inventory management system to keep track of product movements between various warehouse locations. It can also generate report of products at various warehouse locations and its available quantity.
 ### Assumptions
