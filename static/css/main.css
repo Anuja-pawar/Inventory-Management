@@ -1,0 +1,10 @@
+body{
+    font-family: Tisa, sans-serif;
+}
+.icon-btn{
+    font-size: 25px;
+    padding: 0px 8px;
+}
+a:hover{
+    font-weight: bold;
+}

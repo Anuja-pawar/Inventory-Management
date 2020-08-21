@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+{% block title %} Product movements {% endblock %}
+{% block body %}
+<div class="container">
+<div class="row">
+    <div class="col-12">
+        <div class="jumbotron bg-light p-3">
+            <h4 class="mb-2"><b>Product Movements</b> <button type="button" class="btn btn-md icon-btn" 
+                data-toggle="modal" data-target="#addNewMovement">
+                <i class="fa fa-plus-square-o" data-toggle="tooltip" title="Add New Movement"></i>
+              </button></h4><hr>
+                <!-- Add Product Modal -->
+              <div class="modal" id="addNewMovement">
+                <form action="{{ url_for('movement')}}" method="POST">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h4 class="modal-title">Add New Product Movement</h4>
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <label>Product Name</label><br>
+                        <select style="width: 100%;" name="product_name">
+                          <option value='Select product' id='0'>Select product</option>
+                            {% for product in products %}
+                                <option value="{{ product.product_name }}"
+                                        id="product_{{ product.id }}">{{ product.product_name }}</option>
+                            {% endfor %}
+                        </select>
+                    <label>From</label>
+                        <select style="width: 100%;" name="from_location">
+                          <option value='Select warehouse' id='0'>Select warehouse</option>
+                            {% for location in locations %}
+                                <option value="{{ location.warehouse_location }}"
+                                        id="product_{{ location.id }}">{{ location.warehouse_location }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    <label>To</label>
+                        <select style="width: 100%;" name="to_location">
+                          <option value='Select warehouse' id='0'>Select warehouse</option>
+                            {% for location in locations %}
+                                <option value="{{ location.warehouse_location }}"
+                                        id="product_{{ location.id }}">{{ location.warehouse_location }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <label>Quantity</label>
+                        <input type="number" style="width: 100%;" name="product_quantity"
+                               placeholder=" Enter Product Quantity" id="product_quantity" required>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Cancel
+                      </button>
+                      <input type="submit" class="btn btn-success" value="Proceed">
+                    </div>
+                  </div>
+                </div>
+              </form>
+              </div>
+
+              {% with messages =  get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+              {% for category, message in messages %}
+              <div class="alert alert-{{category}} alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+                {{ message }}
+              </div>
+              {% endfor %}
+              {% endif %}
+              {% endwith %}
+              {% if Movements %}
+                <table class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th scope="col"><b>Id</b></th>
+                        <th scope="col"><b>Products</b></th>
+                        <th scope="col"><b>From</b></th>
+                        <th scope="col"><b>To</b></th>
+                        <th scope="col"><b>Quantity</b></th>
+                        <th scope="col"><b>Date</b></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for movement in Movements %}
+                      <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ movement.product_name }}</td>
+                        <td>{{ movement.from_location }}</td>
+                        <td>{{ movement.to_location }}</td>
+                        <td>{{ movement.product_qty }}</td>
+                        <td>{{ movement.timestamp.date() }}</td>
+                        <td>
+                          <button type="button" name="edit-btn" class="btn btn-warning icon-btn" data-toggle="modal" data-target="#editProduct{{ movement.id }}">
+                            <i class="fa fa-edit" data-toggle="tooltip" title="Edit Product"></i>
+                          </button>
+                          <!-- Edit Product Modal -->
+                          <div class="modal" id="editProduct{{ movement.id }}">
+                            <form action="{{ url_for('movement') }}" method="POST">
+                              <div class="modal-dialog">
+                                <div class="modal-content">
+                          
+                                  <div class="modal-header">
+                                    <h4 class="modal-title">Edit Movement</h4>
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                  </div>
+                                  
+                                  <div class="modal-body">
+                                    <label><b>Product</b></label><br>
+                                    <select style="width: 100%;" name="product_name">
+                                      <option value='Select product' id='0'>Select product</option>
+                                        {% for product in products %}
+                                            <option value="{{ product.product_name }}"
+                                                    id="product_{{ product.id }}"
+                                                    {% if product.product_name == movement.product_name %}
+                                                    selected 
+                                                    {% endif %}>
+                                                    {{ product.product_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                  </div>
+                                  <div class="modal-body"><label>From</label>
+                                    <select style="width: 100%;" name="from_location">
+                                      <option value='Select warehouse' id='0'>Select warehouse</option>
+                                        {% for location in locations %}
+                                            <option value="{{ location.warehouse_location }}"
+                                                    id="product_{{ location.id }}"
+                                                    {% if location.warehouse_location == movement.from_location %}
+                                                    selected 
+                                                    {% endif %}>
+                                                    {{ location.warehouse_location }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="modal-body"><label>To</label>
+                                    <select style="width: 100%;" name="to_location">
+                                      <option value='Select warehouse' id='0'>Select warehouse</option>
+                                        {% for location in locations %}
+                                            <option value="{{ location.warehouse_location }}"
+                                                    id="product_{{ location.id }}"
+                                                    {% if location.warehouse_location == movement.to_location %}
+                                                    selected 
+                                                    {% endif %}>
+                                                    {{ location.warehouse_location }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="modal-body">
+                                    <label>Quantity</label>
+                                    <input style="width: 100%;" name="product_quantity"
+                                           placeholder="Enter Product Quantity" value="{{ movement.product_qty }}"
+                                           id="product_quantity" type="number" required>
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="button" class="btn btn-default" data-dismiss="modal">Cancel
+                                  </button>
+                                  <input type="submit" class="btn btn-success" value="Save changes">
+                                </div>  
+                                </div>
+                              </div>
+                            </form>
+                          </div>
+                       
+                        </td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table> 
+                {% else %}
+                <div class="text-center mt-5">
+                  <h4>There's no data to display yet. Add some!</h4>
+                </div>
+              {% endif %}
+        </div>
+    </div>
+</div>
+
+
+</div>
+{% endblock %}

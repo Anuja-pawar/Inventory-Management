@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %} Home {% endblock %}
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="jumbotron bg-light p-3">
+                <h3 class="text-center mb-2 "><b>Summary</b></h3><hr>
+                {% with messages =  get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{category}} alert-dismissible" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                    {{ message }}
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+                {% if Summary == None or Summary|length == 0 %}
+                <div class="text-center mt-5">
+                    <h4>There is no product balance summary to display.</h4>
+                </div>
+                {% else %}
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th scope="col">Products</th>
+                            <th scope="col">Warehouse Locations</th>
+                            <th scope="col">Quantity available</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for item in Summary %}
+                            {% if item.available_quantity != 0 %}
+                                <tr>
+                                    <td>{{ item.product }}</td>
+                                    <td>{{ item.location }}</td>
+                                    <td>{{ item.available_quantity }}</td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                        </tbody>
+                    </table> 
+                {% endif %}  
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

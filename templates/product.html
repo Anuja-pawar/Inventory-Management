@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% block title %} Product {% endblock %}
+{% block body %}
+<div class="container">
+<div class="row">
+    <div class="col-12">
+        <div class="jumbotron bg-light p-3">
+            <h4 class="mb-2"><b>Products</b> <button type="button" class="btn icon-btn" 
+                data-toggle="modal" data-target="#addNewProduct">
+                <i class="fa fa-plus-square-o" data-toggle="tooltip" title="Add New Product"></i>
+              </button></h4><hr>
+              <!-- Add Product Modal -->
+              <div class="modal" id="addNewProduct">
+                <form action="{{ url_for('product') }}" method="POST">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h4 class="modal-title">Add New Product</h4>
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <label><b>Product Name</b></label><br>
+                        <input type="text" name="product_name" id="product_name" style="width:100%">
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Cancel
+                      </button>
+                      <input type="submit" class="btn btn-success" value="Add Product">
+                    </div>
+                  </div>
+                </div>
+              </form>
+              </div>
+
+              {% with messages =  get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+              {% for category, message in messages %}
+              <div class="alert alert-{{category}} alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+                {{ message }}
+              </div>
+              {% endfor %}
+              {% endif %}
+              {% endwith %}
+              {% if Products %}
+                <table class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th scope="col"><b>Id</b></th>
+                        <th scope="col"><b>Name</b></th>
+                        <th scope="col"><b>Quantity</b></th>
+                        <th scope="col"><b>Action</b></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for product in Products %}
+                      <tr>
+                        <th>{{ loop.index }}</th>
+                        <td>{{ product.product_name }}</td>
+                        <td></td>
+                        <td>
+                          <button type="button" name="edit-btn" class="btn btn-warning icon-btn" data-toggle="modal" data-target="#editProduct{{ product.id }}">
+                            <i class="fa fa-edit" data-toggle="tooltip" title="Edit Product"></i>
+                          </button>
+                          <!-- Edit Product Modal -->
+                          <div class="modal" id="editProduct{{ product.id }}">
+                            <form action="{{ url_for('product') }}" method="POST">
+                              <div class="modal-dialog">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <h4 class="modal-title">Edit Product</h4>
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                  </div> 
+                                  <div class="modal-body">
+                                      <label>Product</label><br>
+                                      <input type="hidden" name="edit_product" value="{{ product.id }}">
+                                      <input type="text" name="product_name" id="product_name" style="width:100%"
+                                      value="{{ product.product_name }}" required autofocus><br>
+                                  </div>
+                                  <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel
+                                    </button>
+                                    <input type="submit" class="btn btn-success" value="Save changes">
+                                  </div>
+                                  
+                                </div>
+                              </div>
+                            </form>
+                          </div>
+                          <button type="button" class="btn btn-danger icon-btn" data-toggle="modal" data-target="#deleteProduct{{ product.id }}">
+                            <i class="fa fa-trash-o" data-toggle="tooltip" title="Remove Product"></i>
+                          </button>
+                          <!-- Delete Product Modal -->
+                          <div class="modal" id="deleteProduct{{ product.id }}">
+                            <form action="{{ url_for('product') }}" method="POST">
+                            <div class="modal-dialog">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h5 class="modal-title"><i class="fa fa-warning text-warning"></i></h5>
+                                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                </div>
+                                <div class="modal-body">
+                                  Are you sure you want to remove '{{ product.product_name }}' from the list?
+                                </div>
+                                <div class="modal-footer">
+                                  <input type="hidden" name="delete_product" value="{{ product.id }}">
+                                  <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                                  <button type="submit" class="btn btn-danger">Yes</button>
+                                </div>
+                              </div>
+                            </div>
+                          </form>
+                          </div>
+                        </td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table> 
+                  {% else %}
+                  <div class="text-center mt-5">
+                    <h4>There's no product to display. Add some!</h4>
+                  </div>
+                {% endif %}  
+        </div>
+    </div>
+</div>
+
+
+</div>
+{% endblock %}
