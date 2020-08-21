@@ -1,9 +1,12 @@
-from flask import Flask, render_template, url_for, request, redirect, flash, Response
+from flask import Flask, render_template, url_for, request, redirect, flash, Response, make_response
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from werkzeug.wsgi import FileWrapper
 import io
 import xlsxwriter
+import pdfkit
+config = pdfkit.configuration(wkhtmltopdf='C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe')
+
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///inventory.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -205,8 +208,8 @@ def movement():
     return render_template('movements.html', products=products, locations=locations, Movements=movements)
 
 
-@app.route("/download", methods=['GET', 'POST'])
-def export_report():
+@app.route("/Report", methods=['GET', 'POST'])
+def export_excel():
     timestamp = datetime.utcnow()
     summary = get_summary()
     output = io.BytesIO()
@@ -229,6 +232,16 @@ def export_report():
     data = FileWrapper(output)   
     return Response(data, mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", direct_passthrough=True)
     
+@app.route('/download_pdf')
+def export_pdf():
+    summary = get_summary()
+    timestamp = datetime.utcnow()
+    rendered = render_template('pdf_template.html', Summary=summary)
+    pdf = pdfkit.from_string(rendered, False, configuration=config)
+    response = make_response(pdf)
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = 'inline; filename=Report' + str(timestamp) + '.pdf'
+    return response
 
 def get_total(product, location):
     imported = 0
@@ -317,6 +330,7 @@ def get_summary():
             data['available_quantity'] = total
             summary.append(data)
     return summary
+
 
   
 if __name__ == "__main__":

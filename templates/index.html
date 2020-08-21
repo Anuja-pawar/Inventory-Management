@@ -5,12 +5,17 @@
     <div class="row">
         <div class="col-12">
             <div class="jumbotron bg-light p-3">
-                <h3 class="text-center mb-2 "><b>Inventory Report</b>
+                <h3 class="text-center mb-2 d-inline"><b>Inventory Report</b>
                 {% if Summary %}
-                <a type="button" class="btn icon-btn" href="{{ url_for('export_report') }}" 
-                data-toggle="tooltip" title="Download Report">
-                    <i class="fa  fa-download  "></i>
-                </a>
+                <div class="dropdown float-right">
+                    <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      Download Report
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                      <a class="dropdown-item" href="{{ url_for('export_excel') }}">Excel</a>
+                      <a class="dropdown-item" href="{{ url_for('export_pdf') }}">Pdf</a>
+                    </div>
+                  </div>
                 {% endif %}
                 </h3><hr>
                 {% if Summary|length == 0 %}
