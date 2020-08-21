@@ -247,17 +247,15 @@ def get_total(product, location):
 
 
 def get_imported(product, location):
-    product = {'product_name': product}
-    location = {'warehouse_location': location}
-    imported = ProductMovement.query.filter_by(product_name=product.get('product_name')).filter_by(
-        to_location=location.get('warehouse_location')).all()
+
+    imported = ProductMovement.query.filter_by(product_name=product).filter_by(
+        to_location=location).all()
     return imported
 
 def get_exported(product, location):
-    product = {'product_name': product}
-    location = {'warehouse_location': location}
-    exported = ProductMovement.query.filter_by(product_name=product.get('product_name')).filter_by(
-        from_location=location.get('warehouse_location')).all()
+  
+    exported = ProductMovement.query.filter_by(product_name=product).filter_by(
+        from_location=location).all()
     return exported
 
 
