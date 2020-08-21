@@ -5,7 +5,7 @@
 <div class="row">
     <div class="col-12">
         <div class="jumbotron bg-light p-3">
-          <h4 class="mb-2"><b>Warehouse Locations</b> <button type="button" class="btn icon-btn" 
+          <h4 class="mb-2 font-weight-bold">Warehouse Locations <button type="button" class="btn icon-btn" 
             data-toggle="modal" data-target="#addNewLocation">
             <i class="fa fa-plus-square-o" data-toggle="tooltip" title="Add New Location"></i>
             </button></h4><hr>
@@ -16,19 +16,23 @@
                           <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                           <span aria-hidden="true">&times;</span>
                           </button>
+                          {% if category == "danger" or category == "warning" %}
+                          <i class="fa fa-warning"></i>
+                          {% endif %}
                           {{ message }}
                       </div>
                   {% endfor %}
               {% endif %}
-              {% endwith %}
-              {% if Locations %}
-                <table class="table table-bordered">
-                    <thead>
+            {% endwith %}
+            {% if Locations %}
+              <div class="scrollable-div">
+                <table class="table table-bordered table-striped">
+                    <thead class="fixed">
                       <tr>
-                        <th scope="col"><b>Id</b></th>
-                        <th scope="col"><b>Location</b></th>
-                        <th scope="col"><b>Product List</b></th>
-                        <th scope="col"><b>Action</b></th>
+                        <th scope="col">Id</th>
+                        <th scope="col">Location</th>
+                        <th scope="col">Product List</th>
+                        <th scope="col">Action</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -36,9 +40,9 @@
                       <tr>
                         <th>{{ loop.index }}</th>
                         <td>{{ location.warehouse_location}}</td>
-                        <td></td>
+                        <td>{{ location.product_list}}</td>
                         <td>
-                          <button type="button" name="edit-btn" class="btn btn-warning icon-btn" data-toggle="modal" data-target="#editLocation{{ location.id }}">
+                          <button type="button" name="edit-btn" class="btn btn-default icon-btn" data-toggle="modal" data-target="#editLocation{{ location.id }}">
                             <i class="fa fa-edit" data-toggle="tooltip" title="Edit Location"></i>
                           </button>
                           <!-- Edit Location Modal -->
@@ -48,15 +52,17 @@
                                 <div class="modal-content">
                           
                                   <div class="modal-header">
-                                    <h4 class="modal-title">Edit Location</h4>
+                                    <h5 class="modal-title font-weight-bold">Edit Location</h5>
                                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                                   </div>
                                   
-                                  <div class="modal-body">
-                                      <label>Warehouse Location</label><br>
+                                  <div class="modal-body bg-light">
+                                    <div class="form-group">
+                                      <label class="font-weight-bold">Warehouse Location</label>
                                       <input type="hidden" name="edit_location" value="{{ location.id }}">
-                                      <input type="text" name="location_name"  style="width:100%"
-                                      value="{{ location.warehouse_location}}" required autofocus><br>
+                                      <input type="text" name="location_name" class="form-control"
+                                      value="{{ location.warehouse_location}}" required autofocus autocomplete="off">
+                                    </div>
                                   </div>
 
                                   <div class="modal-footer">
@@ -69,40 +75,19 @@
                               </div>
                             </form>
                           </div>
-                          <button type="button" class="btn btn-danger icon-btn" data-toggle="modal" data-target="#deleteLocation{{ location.id }}">
-                            <i class="fa fa-trash-o" data-toggle="tooltip" title="Remove Location"></i>
-                          </button>
-                          <!-- Delete Location Modal -->
-                          <div class="modal" id="deleteLocation{{ location.id }}">
-                            <form action="{{ url_for('location') }}" method="POST">
-                            <div class="modal-dialog">
-                              <div class="modal-content">
-                                <div class="modal-header">
-                                  <h5 class="modal-title"><i class="fa fa-warning text-warning"></i></h5>
-                                  <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                </div>
-                                <div class="modal-body">
-                                  Are you sure you want to remove '{{ location.warehouse_location }}' from the list?
-                                </div>
-                                <div class="modal-footer">
-                                  <input type="hidden" name="delete_location" value="{{ location.id }}">
-                                  <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
-                                  <button type="submit" class="btn btn-danger">Yes</button>
-                                </div>
-                              </div>
-                            </div>
-                          </form>
-                          </div>
+                         
                         </td>
                       </tr>
                       {% endfor %}
                     </tbody>
-                  </table>   
+                  </table>  
+                </div> 
                 {% else %}
                 <div class="text-center mt-5">
-                  <h4>There's no warehouse location to display. Add some!</h4>
+                  <h1><i class="fa fa-folder-open-o"></i></h1>
+                  <h4>There's currently no data to display. Add now!</h4>
                 </div>
-              {% endif %}
+            {% endif %}
         </div>
     </div>
 </div>
@@ -113,18 +98,20 @@
       <div class="modal-content">
 
         <div class="modal-header">
-          <h4 class="modal-title">Add New Warehouse Location</h4>
+          <h5 class="modal-title font-weight-bold">Add New Warehouse Location</h5>
           <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>
         
-        <div class="modal-body">
-            <label>Location</label><br>
-            <input type="text" name="location_name" id="location_name" style="width:100%">
+        <div class="modal-body bg-light">
+          <div class="form-group">
+            <label class="font-weight-bold">Location</label>
+            <input type="text" class="form-control" name="location_name" id="location_name" required autocomplete="off">
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Cancel
           </button>
-          <input type="submit" class="btn btn-success" value="Add Location">
+          <input type="submit" class="btn btn-success" value="Save">
         </div>
         
       </div>

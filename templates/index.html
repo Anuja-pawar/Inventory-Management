@@ -5,30 +5,27 @@
     <div class="row">
         <div class="col-12">
             <div class="jumbotron bg-light p-3">
-                <h3 class="text-center mb-2 "><b>Summary</b></h3><hr>
-                {% with messages =  get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                {% for category, message in messages %}
-                <div class="alert alert-{{category}} alert-dismissible" role="alert">
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                    </button>
-                    {{ message }}
-                </div>
-                {% endfor %}
+                <h3 class="text-center mb-2 "><b>Inventory Report</b>
+                {% if Summary %}
+                <a type="button" class="btn icon-btn" href="{{ url_for('export_report') }}" 
+                data-toggle="tooltip" title="Download Report">
+                    <i class="fa  fa-download  "></i>
+                </a>
                 {% endif %}
-                {% endwith %}
-                {% if Summary == None or Summary|length == 0 %}
+                </h3><hr>
+                {% if Summary|length == 0 %}
                 <div class="text-center mt-5">
-                    <h4>There is no product balance summary to display.</h4>
+                    <h1><i class="fa fa-folder-open-o"></i></h1>
+                    <h4>There is currently no data available to display.</h4>
                 </div>
                 {% else %}
-                    <table class="table table-bordered">
-                        <thead>
+                <div class="scrollable-div">
+                    <table class="table table-bordered table-striped">
+                        <thead class="fixed">
                         <tr>
                             <th scope="col">Products</th>
                             <th scope="col">Warehouse Locations</th>
-                            <th scope="col">Quantity available</th>
+                            <th scope="col">Available Quantity</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -43,6 +40,7 @@
                         {% endfor %}
                         </tbody>
                     </table> 
+                </div>
                 {% endif %}  
             </div>
         </div>

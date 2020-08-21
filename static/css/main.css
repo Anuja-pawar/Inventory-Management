@@ -1,10 +1,22 @@
 body{
     font-family: Tisa, sans-serif;
+    overflow:auto;
 }
 .icon-btn{
     font-size: 25px;
     padding: 0px 8px;
 }
 a:hover{
-    font-weight: bold;
+    color: black;
 }
+.scrollable-div {
+    overflow:hidden;
+    overflow-y: auto;
+    height: 350px;
+  }
+.fixed th {
+    top: 0;
+    position: sticky;
+    background-color:#f8f9fa;
+    border-bottom: 1px solid black;
+  }
