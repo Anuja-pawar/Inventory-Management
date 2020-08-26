@@ -49,7 +49,7 @@ Export filtered data
 ![filtered data pdf](https://raw.githubusercontent.com/Anuja-pawar/Inventory-Management/master/utils/export_filtered_pdf.gif "filtered data pdf")
 
 Filter On click
-(Tried to do filtering on click. Not quite sure, if this is what you were expecting)
+(Tried to do filtering on click.)
 
 ![filter onclick](https://raw.githubusercontent.com/Anuja-pawar/Inventory-Management/master/utils/filtering_onclick.gif "filter onclick")
 
