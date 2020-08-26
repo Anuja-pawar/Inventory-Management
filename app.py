@@ -60,7 +60,6 @@ def index(prod=[],loc=[]):
     if 'location' in request.args:
         loc = request.args.getlist('location')
     data = get_summary(prod,loc)
-    print(data)
     if request.args:
         if not data:
             msg = Markup("<h5>No results found!</h5>")
@@ -71,7 +70,7 @@ def index(prod=[],loc=[]):
     return render_template("index.html", Summary=data, products = products, locations = locations, msg = msg)
 
 
-@app.route("/product/<name>", methods=['GET', 'POST'])
+@app.route("/product/<name>", methods=['GET'])
 @app.route("/product/", methods=['GET', 'POST'])
 def product(name=None):
     if request.method == 'POST':
@@ -102,10 +101,10 @@ def product(name=None):
         all_products = get_product_data()
     return render_template("product.html", Products=all_products)
 
-@app.route("/location/<loc>")
-@app.route("/location/<prod>")
+
+@app.route("/location/<searchStr>", methods=['GET'])
 @app.route("/location", methods=['GET', 'POST'])
-def location(loc = None,prod = None):
+def location(searchStr=None):
     if request.method == 'POST':   
         if 'edit_location' in request.form:
             location_id = request.form['edit_location']
@@ -133,7 +132,7 @@ def location(loc = None,prod = None):
         db.session.commit()
         return redirect(url_for("location"))
 
-    all_location = get_warehouse_data(loc, prod)
+    all_location = get_warehouse_data(searchStr)
     return render_template("location.html", Locations=all_location)
 
 
@@ -250,8 +249,7 @@ def movement(prod=[],loc=[]):
             msg = Markup("<h5>No results found!</h5>")
     elif not movements:
         msg = Markup("<h4>There's currently no data to display. Add now!</h4>")
-        
-
+    
     products = Product.query.all()
     locations = Location.query.all()
     return render_template('movements.html', products=products, locations=locations, Movements=movements, msg = msg)
@@ -305,7 +303,6 @@ def get_total(product, location):
     if exported_items:
         for item in exported_items:
             exported += item.product_qty
-        print(exported)
     total = imported - exported
     return total
 
@@ -341,7 +338,6 @@ def get_product_data(name=None):
             if exported_items:
                 for item in exported_items:
                     exported += item.product_qty
-            print(exported)
         total = imported - exported
         data['id'] = product.id
         data['product_name'] = product.product_name
@@ -350,10 +346,12 @@ def get_product_data(name=None):
     return product_data
 
 
-def get_warehouse_data(loc=None, prod=None):
-    if loc != None:
-        locations = Location.query.filter_by(warehouse_location=loc).all()
+def get_warehouse_data(searchStr):
+    if (Location.query.filter_by(warehouse_location=searchStr).first()) is not None:
+        prod = None
+        locations = Location.query.filter_by(warehouse_location=searchStr).all()
     else:
+        prod = searchStr
         locations = Location.query.all()
     products = Product.query.all()
     warehouse_data = []
@@ -373,8 +371,7 @@ def get_warehouse_data(loc=None, prod=None):
                 if prod in p_list:
                     warehouse_data.append(data)
             else:
-                warehouse_data.append(data)
-            
+                warehouse_data.append(data)        
     return warehouse_data
 
 

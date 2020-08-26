@@ -39,11 +39,11 @@
                       <tr>
                         <th>{{ loop.index }}</th>
                         <td>
-                          <a class="item-link" href="{{ url_for('location', loc=location.warehouse_location) }}">{{ location.warehouse_location }}</a>
+                          <a class="item-link" href="{{ url_for('location', searchStr=location.warehouse_location) }}">{{ location.warehouse_location }}</a>
                         </td>
                         <td>
                           {% for item in location.product_list %}
-                          <a class="item-link" href="{{ url_for('location', prod=item) }}">{{ item }}</a><br>
+                          <a class="item-link" href="{{ url_for('location', searchStr=item) }}">{{ item }}</a><br>
                           {% endfor %}
                         </td>
                         <td>
