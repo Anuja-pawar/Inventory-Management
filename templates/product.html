@@ -27,9 +27,8 @@
                 {% endif %}
               {% endwith %}  
               {% if Products %}
-              <div class="scrollable-div">
                 <table class="table table-bordered table-striped">
-                    <thead class="fixed">
+                    <thead>
                       <tr>
                         <th scope="col">Id</th>
                         <th scope="col">Name</th>
@@ -41,7 +40,7 @@
                       {% for product in Products %}
                       <tr>
                         <th>{{ loop.index }}</th>
-                        <td>{{ product.product_name }}</td>
+                        <td><a class="item-link" href="{{ url_for('product', name=product.product_name) }}">{{ product.product_name }}</a></td>
                         {% if product.product_qty == 0 %}
                         <td>---</td>
                         {% else %}
@@ -83,8 +82,7 @@
                       </tr>
                       {% endfor %}
                     </tbody>
-                  </table>
-                </div> 
+                  </table> 
                 {% else %}
                   <div class="text-center mt-5">
                     <h1><i class="fa fa-folder-open-o"></i></h1>

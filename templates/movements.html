@@ -25,11 +25,28 @@
                   {% endfor %}
                 {% endif %}
               {% endwith %}
-
-              {% if Movements %}
-              <div class="scrollable-div">
-                <table class="table table-bordered table-striped">
-                    <thead class="fixed" > 
+                <div id="search_panel" class="d-flex justify-content-end">
+                  <form id="filterOpt" action="{{ url_for('movement')}}">
+                    <label>Product</label>
+                    <select id="product" name="product" class="selectpicker" multiple data-live-search="true">
+                      <option value="">All</option>
+                      {% for item in products %}
+                      <option value="{{ item.product_name }}">{{ item.product_name }}</option>
+                      {% endfor %}
+                    </select>
+                    <label>Location</label>
+                    <select id="location" name="location" class="selectpicker" multiple data-live-search="true">
+                      <option value="">All</option>
+                      {% for item in locations %}
+                      <option value="{{ item.warehouse_location }}">{{ item.warehouse_location }}</option>
+                      {% endfor %}
+                    </select>
+                    <input type="submit" class="btn btn-primary mb-2" value="Search">
+                  </form>
+                </div>
+                {% if Movements %}
+                <table class="table table-bordered table-striped data-table">
+                    <thead> 
                       <tr>
                         <th scope="col">Id</th>
                         <th scope="col">Products</th>
@@ -151,11 +168,9 @@
                       {% endfor %}
                     </tbody>
                   </table> 
-                </div>
                 {% else %}
-                <div class="text-center mt-5">
-                  <h1><i class="fa fa-folder-open-o"></i></h1>
-                  <h4>There's currently no data to display. Add now!</h4>
+                <div class="mt-5 d-flex justify-content-center">
+                  {{msg}}
                 </div>
               {% endif %}
         </div>

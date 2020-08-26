@@ -1,10 +1,12 @@
-from flask import Flask, render_template, url_for, request, redirect, flash, Response, make_response
+from flask import Flask, render_template, url_for, request, redirect, flash, Response, make_response, Markup
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import or_
 from datetime import datetime
 from werkzeug.wsgi import FileWrapper
 import io
 import xlsxwriter
 import pdfkit
+import json
 config = pdfkit.configuration(wkhtmltopdf='C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe')
 
 app = Flask(__name__)
@@ -51,13 +53,27 @@ class ProductMovement(db.Model):
 
 @app.route("/")
 @app.route("/index")
-def index():
-    data = get_summary()
-    return render_template("index.html", Summary=data)
+def index(prod=[],loc=[]):
+    msg = ''
+    if 'product' in request.args:
+        prod = request.args.getlist('product')
+    if 'location' in request.args:
+        loc = request.args.getlist('location')
+    data = get_summary(prod,loc)
+    print(data)
+    if request.args:
+        if not data:
+            msg = Markup("<h5>No results found!</h5>")
+    elif not data:
+        msg = Markup("<h1><i class='fa fa-folder-open-o'></i></h1><h4>There's currently no data to display. Add now!</h4>")
+    products = Product.query.all()
+    locations = Location.query.all()
+    return render_template("index.html", Summary=data, products = products, locations = locations, msg = msg)
 
 
+@app.route("/product/<name>", methods=['GET', 'POST'])
 @app.route("/product/", methods=['GET', 'POST'])
-def product():
+def product(name=None):
     if request.method == 'POST':
         if 'edit_product' in request.form:
             product_id = request.form['edit_product']
@@ -80,17 +96,20 @@ def product():
                 flash(f"'{product_name}' is successfully added!", "success")
         db.session.commit()
         return redirect(url_for("product"))
-   
-    all_products = get_product_data()
+    if name != None:
+        all_products = get_product_data(name)
+    else:
+        all_products = get_product_data()
     return render_template("product.html", Products=all_products)
 
-
-@app.route("/location", methods=['GET', 'POST'])
-def location():
-    if request.method == 'POST':
+@app.route("/location/<loc>")
+@app.route("/location/<prod>")
+@app.route("/location/", methods=['GET', 'POST'])
+def location(loc = None,prod = None):
+    if request.method == 'POST':   
         if 'edit_location' in request.form:
             location_id = request.form['edit_location']
-            exist = Product.query.filter_by(id=location_id).first()
+            exist = Location.query.filter_by(id=location_id).first()
             location_name = request.form['location_name']
             from_movements = ProductMovement.query.filter_by(from_location=exist.warehouse_location).all()
             if from_movements:
@@ -99,7 +118,7 @@ def location():
             to_movements = ProductMovement.query.filter_by(to_location=exist.warehouse_location).all()
             if to_movements:
                 for item in to_movements:
-                    item.from_location = location_name
+                    item.to_movements = location_name
             exist.warehouse_location = location_name
             exist.date_updated = datetime.utcnow()
             flash(f"'{exist.warehouse_location}' is successfully updated!", "info")
@@ -114,12 +133,14 @@ def location():
         db.session.commit()
         return redirect(url_for("location"))
 
-    all_location = get_warehouse_data()
+    all_location = get_warehouse_data(loc, prod)
     return render_template("location.html", Locations=all_location)
 
 
+# @app.route("/movement/<prod>/<loc>", methods=['GET', 'POST'])
 @app.route("/movement", methods=['GET', 'POST'])
-def movement():
+def movement(prod=[],loc=[]):
+    msg = ''
     if request.method == 'POST':
         if 'edit_movement' in request.form:
             editable = True
@@ -202,16 +223,37 @@ def movement():
                 flash(f"Product movement for '{new_movement.product_name}' is successfully added!", 'success')
         db.session.commit()
         return redirect(url_for('movement'))
+    
+    if 'product' in request.args:
+        prod = request.args.getlist('product')
+    if 'location' in request.args:
+        loc = request.args.getlist('location')
+    if prod != []:
+        if loc != [] :
+            movements = ProductMovement.query.filter(ProductMovement.product_name.in_(prod)).filter(or_(ProductMovement.from_location.in_(loc), ProductMovement.to_location.in_(loc))).all()
+        else:
+            movements = ProductMovement.query.filter(ProductMovement.product_name.in_(prod)).all()
+    elif loc != []:
+        movements = ProductMovement.query.filter(or_(ProductMovement.from_location.in_(loc), ProductMovement.to_location.in_(loc))).all()
+    else:
+        movements = ProductMovement.query.all()
+    if request.args:
+        if not movements:
+            msg = Markup("<h5>No results found!</h5>")
+    elif not movements:
+        msg = Markup("<h1><i class='fa fa-folder-open-o'></i></h1><h4>There's currently no data to display. Add now!</h4>")
+        
+
     products = Product.query.all()
     locations = Location.query.all()
-    movements = ProductMovement.query.all()
-    return render_template('movements.html', products=products, locations=locations, Movements=movements)
+    return render_template('movements.html', products=products, locations=locations, Movements=movements, msg = msg)
 
 
 @app.route("/Report", methods=['GET', 'POST'])
 def export_excel():
     timestamp = datetime.utcnow()
-    summary = get_summary()
+    with open('data.txt') as json_file:
+        summary = json.load(json_file)
     output = io.BytesIO()
     workbook = xlsxwriter.Workbook(output)
     worksheet = workbook.add_worksheet()
@@ -234,9 +276,10 @@ def export_excel():
     
 @app.route('/download_pdf')
 def export_pdf():
-    summary = get_summary()
+    with open('data.txt') as json_file:
+        data = json.load(json_file)
     timestamp = datetime.utcnow()
-    rendered = render_template('pdf_template.html', Summary=summary)
+    rendered = render_template('pdf_template.html', Summary=data)
     pdf = pdfkit.from_string(rendered, False, configuration=config)
     response = make_response(pdf)
     response.headers['Content-Type'] = 'application/pdf'
@@ -270,8 +313,11 @@ def get_exported(product, location):
     return exported
 
 
-def get_product_data():
-    products = Product.query.all()
+def get_product_data(name=None):
+    if name!=None:
+        products = Product.query.filter_by(product_name=name).all()
+    else:
+        products = Product.query.all()
     locations = Location.query.all()
     product_data = []
     for product in products:
@@ -296,29 +342,44 @@ def get_product_data():
     return product_data
 
 
-def get_warehouse_data():
+def get_warehouse_data(loc=None, prod=None):
+    if loc != None:
+        locations = Location.query.filter_by(warehouse_location=loc).all()
+    else:
+        locations = Location.query.all()
     products = Product.query.all()
-    locations = Location.query.all()
     warehouse_data = []
-    for location in locations:
-        data= {}
-        p_list = []
-        for product in products:
-            total = get_total(product.product_name,location.warehouse_location)
-            if total > 0:
-                p_list.append(product.product_name)
-        product_list = ', '.join(p_list)
-        data['id']= location.id
-        data['warehouse_location'] = location.warehouse_location
-        data['product_list']= product_list
-        warehouse_data.append(data)
+    if locations:
+        for item in locations:
+            data= {}
+            p_list = []
+            for product in products:
+                total = get_total(product.product_name,item.warehouse_location)
+                if total > 0:
+                    p_list.append(product.product_name)
+            # product_list = ', '.join(p_list)
+            data['id']= item.id
+            data['warehouse_location'] = item.warehouse_location
+            data['product_list']= p_list
+            if prod != None:
+                if prod in p_list:
+                    warehouse_data.append(data)
+            else:
+                warehouse_data.append(data)
+            
     return warehouse_data
 
 
-def get_summary():
+def get_summary(prod= [],loc= []):
     summary = []
-    products = Product.query.all()
-    locations = Location.query.all()
+    if prod != []:
+        products = Product.query.filter(Product.product_name.in_(prod)).all()
+    if prod == [] or prod == ['All']:
+        products = Product.query.all()
+    if loc != []:
+        locations = Location.query.filter(Location.warehouse_location.in_(loc)).all()
+    if loc == [] or loc == ['All']:
+        locations = Location.query.all()
     for product in products:
         for location in locations:
             data = {}
@@ -327,8 +388,13 @@ def get_summary():
             total = get_total(prod_name, loc_name)
             data['product'] = prod_name
             data['location'] = loc_name
-            data['available_quantity'] = total
+            if total == 0:
+                continue
+            else:
+                data['available_quantity'] = total
             summary.append(data)
+            with open('data.txt', 'w') as outfile:
+                json.dump(summary, outfile)
     return summary
 
 

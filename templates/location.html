@@ -25,9 +25,8 @@
               {% endif %}
             {% endwith %}
             {% if Locations %}
-              <div class="scrollable-div">
                 <table class="table table-bordered table-striped">
-                    <thead class="fixed">
+                    <thead>
                       <tr>
                         <th scope="col">Id</th>
                         <th scope="col">Location</th>
@@ -39,8 +38,14 @@
                       {% for location in Locations %}
                       <tr>
                         <th>{{ loop.index }}</th>
-                        <td>{{ location.warehouse_location}}</td>
-                        <td>{{ location.product_list}}</td>
+                        <td>
+                          <a class="item-link" href="{{ url_for('location', loc=location.warehouse_location) }}">{{ location.warehouse_location }}</a>
+                        </td>
+                        <td>
+                          {% for item in location.product_list %}
+                          <a class="item-link" href="{{ url_for('location', prod=item) }}">{{ item }}</a><br>
+                          {% endfor %}
+                        </td>
                         <td>
                           <button type="button" name="edit-btn" class="btn btn-default icon-btn" data-toggle="modal" data-target="#editLocation{{ location.id }}">
                             <i class="fa fa-edit" data-toggle="tooltip" title="Edit Location"></i>
@@ -81,7 +86,6 @@
                       {% endfor %}
                     </tbody>
                   </table>  
-                </div> 
                 {% else %}
                 <div class="text-center mt-5">
                   <h1><i class="fa fa-folder-open-o"></i></h1>

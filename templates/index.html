@@ -18,15 +18,31 @@
                   </div>
                 {% endif %}
                 </h3><hr>
-                {% if Summary|length == 0 %}
-                <div class="text-center mt-5">
-                    <h1><i class="fa fa-folder-open-o"></i></h1>
-                    <h4>There is currently no data available to display.</h4>
+                <div id="search_panel" class="d-flex justify-content-end">
+                    <form id="filterOpt" action="{{ url_for('index')}}">
+                      <label>Product</label>
+                      <select id="product" name="product" class="selectpicker" multiple data-live-search="true">
+                        <option>All</option>
+                        {% for item in products %}
+                        <option value="{{ item.product_name }}">{{ item.product_name }}</option>
+                        {% endfor %}
+                      </select>
+                      <label>Location</label>
+                      <select id="location" name="location" class="selectpicker" multiple data-live-search="true">
+                        <option>All</option>
+                        {% for item in locations %}
+                        <option value="{{ item.warehouse_location }}">{{ item.warehouse_location }}</option>
+                        {% endfor %}
+                      </select>
+                      <input type="submit" class="btn btn-primary mb-2" value="Search">
+                    </form>
+                  </div>
+                <div class="mt-5 d-flex justify-content-center">
+                    {{ msg }}
                 </div>
-                {% else %}
-                <div class="scrollable-div">
+                {% if Summary %}
                     <table class="table table-bordered table-striped">
-                        <thead class="fixed">
+                        <thead></thead>
                         <tr>
                             <th scope="col">Products</th>
                             <th scope="col">Warehouse Locations</th>
@@ -45,7 +61,6 @@
                         {% endfor %}
                         </tbody>
                     </table> 
-                </div>
                 {% endif %}  
             </div>
         </div>

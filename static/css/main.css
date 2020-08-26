@@ -9,14 +9,8 @@ body{
 a:hover{
     color: black;
 }
-.scrollable-div {
-    overflow:hidden;
-    overflow-y: auto;
-    height: 350px;
-  }
-.fixed th {
-    top: 0;
-    position: sticky;
-    background-color:#f8f9fa;
-    border-bottom: 1px solid black;
-  }
+.item-link, item-link:hover{
+    color: black;
+    cursor: unset;
+    text-decoration: none !important;
+}
