@@ -38,12 +38,23 @@ Download Report in excel
 
 ![Report excel](https://raw.githubusercontent.com/Anuja-pawar/Inventory-Management/master/utils/Download_excel.gif "Report excel")
 
+### New Updates:
+
+Product movement filter
+
+![Filtering movement](https://raw.githubusercontent.com/Anuja-pawar/Inventory-Management/master/utils/filtering_product_movement.gif "Filtering movement")
+
+Export filtered data
+
+![filtered data pdf](https://raw.githubusercontent.com/Anuja-pawar/Inventory-Management/master/utils/export_filtered_pdf.gif "filtered data pdf")
+
+Filter On click
+(Tried to do filtering on click. Not quite sure, if this is what you were expecting)
+
+![filter onclick](https://raw.githubusercontent.com/Anuja-pawar/Inventory-Management/master/utils/filtering_onclick.gif "filter onclick")
 
 ### Dependencies
 1. Flask
 2. Pdfkit
 3. Wkhtmltopdf
 4. Xlsxwriter
-
-
-
