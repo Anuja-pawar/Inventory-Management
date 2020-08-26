@@ -65,7 +65,7 @@ def index(prod=[],loc=[]):
         if not data:
             msg = Markup("<h5>No results found!</h5>")
     elif not data:
-        msg = Markup("<h1><i class='fa fa-folder-open-o'></i></h1><h4>There's currently no data to display. Add now!</h4>")
+        msg = Markup("<h4>There's currently no data to display. Add now!</h4>")
     products = Product.query.all()
     locations = Location.query.all()
     return render_template("index.html", Summary=data, products = products, locations = locations, msg = msg)
@@ -104,7 +104,7 @@ def product(name=None):
 
 @app.route("/location/<loc>")
 @app.route("/location/<prod>")
-@app.route("/location/", methods=['GET', 'POST'])
+@app.route("/location", methods=['GET', 'POST'])
 def location(loc = None,prod = None):
     if request.method == 'POST':   
         if 'edit_location' in request.form:
@@ -241,7 +241,7 @@ def movement(prod=[],loc=[]):
         if not movements:
             msg = Markup("<h5>No results found!</h5>")
     elif not movements:
-        msg = Markup("<h1><i class='fa fa-folder-open-o'></i></h1><h4>There's currently no data to display. Add now!</h4>")
+        msg = Markup("<h4>There's currently no data to display. Add now!</h4>")
         
 
     products = Product.query.all()
