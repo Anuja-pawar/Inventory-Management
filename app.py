@@ -237,6 +237,14 @@ def movement(prod=[],loc=[]):
         movements = ProductMovement.query.filter(or_(ProductMovement.from_location.in_(loc), ProductMovement.to_location.in_(loc))).all()
     else:
         movements = ProductMovement.query.all()
+    if loc == ['All'] or loc == []:
+        if prod == ['All'] or prod == []:
+            movements = ProductMovement.query.all()
+        else:
+            movements = ProductMovement.query.filter(ProductMovement.product_name.in_(prod)).all()
+    elif prod == ['All'] or prod == []:
+        movements = ProductMovement.query.filter(or_(ProductMovement.from_location.in_(loc), ProductMovement.to_location.in_(loc))).all()
+            
     if request.args:
         if not movements:
             msg = Markup("<h5>No results found!</h5>")

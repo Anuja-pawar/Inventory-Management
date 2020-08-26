@@ -29,14 +29,14 @@
                   <form id="filterOpt" action="{{ url_for('movement')}}">
                     <label>Product</label>
                     <select id="product" name="product" class="selectpicker" multiple data-live-search="true">
-                      <option value="">All</option>
+                      <option>All</option>
                       {% for item in products %}
                       <option value="{{ item.product_name }}">{{ item.product_name }}</option>
                       {% endfor %}
                     </select>
                     <label>Location</label>
                     <select id="location" name="location" class="selectpicker" multiple data-live-search="true">
-                      <option value="">All</option>
+                      <option>All</option>
                       {% for item in locations %}
                       <option value="{{ item.warehouse_location }}">{{ item.warehouse_location }}</option>
                       {% endfor %}
